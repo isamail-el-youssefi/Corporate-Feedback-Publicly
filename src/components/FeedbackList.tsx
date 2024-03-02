@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import FeedbackItem from "./FeedbackItem";
+import Spinner from "./Spinner";
 
 const exampleFeedbackItem = [
   {
@@ -25,8 +26,10 @@ export default function FeedbackList() {
   const feedbackItemsToDisplay = exampleFeedbackItem.slice(0, 1);
 
   const [feedbackItem, setFeedbackItem] = useState(feedbackItemsToDisplay);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true)
     fetch(
       "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
     )
@@ -35,12 +38,15 @@ export default function FeedbackList() {
       })
       .then((data) => {
         setFeedbackItem((prev) => [...prev, ...data.feedbacks]);
+        setIsLoading(false);
         console.log(data);
       });
   }, []);
 
   return (
     <ol className="feedback-list">
+      {isLoading ? <Spinner /> : null}
+
       {feedbackItem.map((item) => (
         <FeedbackItem key={item.id} feedbackItem={item} />
       ))}
