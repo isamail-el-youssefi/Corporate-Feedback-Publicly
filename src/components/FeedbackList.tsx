@@ -31,26 +31,28 @@ export default function FeedbackList() {
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(
-      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
-    )
-      .then((res) => {
+    const fetchFeedbackItems = async () => {
+      setIsLoading(true);
+
+      try {
+        const res = await fetch(
+          "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
+        );
+
         if (!res.ok) {
-          throw new Error("Something went wrong 404 ");
+          throw new Error("Network response was not ok");
         }
-        return res.json(); //parsing as json
-      })
-      .then((data) => {
+
+        const data = await res.json();
         setFeedbackItem((prev) => [...prev, ...data.feedbacks]);
-        setIsLoading(false);
-        console.log(data);
-      })
-      .catch(() => {
-        //network err,not 200 response,json parsing error
-        setErrMsg("something went wrong");
-        setIsLoading(false);
-      });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setErrMsg(`Error fetching data: ${error}`);
+      }
+      setIsLoading(false);
+    };
+
+    fetchFeedbackItems();
   }, []);
 
   return (
