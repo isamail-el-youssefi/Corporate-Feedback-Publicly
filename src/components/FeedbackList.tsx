@@ -39,12 +39,10 @@ const feedbackItem = [
 ];
 
 export default function FeedbackList() {
-  // Extract only the first two items from the feedbackItem array
-  const feedbackItemsToDisplay = feedbackItem.slice(0, 3);
-
+  
   return (
     <ol className="feedback-list">
-      {feedbackItemsToDisplay.map((item) => {
+      {feedbackItem.map((item) => {
         return <FeedbackItem feedbackItem={item} />;
       })}
     </ol>
