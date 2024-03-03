@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import Container from "./Container";
-import Footer from "./Footer";
-import HashtagList from "./HashtagList";
+import { useEffect, useMemo, useState } from "react";
+import Container from "./layout/Container";
+import Footer from "./layout/Footer";
+import HashtagList from "./hashtags/HashtagList";
 import { TFeedbackItem } from "../lib/type/type";
 
 const exampleFeedbackItem = [
@@ -9,7 +9,7 @@ const exampleFeedbackItem = [
     id: 558797987656,
     upvoteCount: 598,
     badgeLetter: "D",
-    companyName: "ismail",
+    company: "ismail",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing ejgd khdjah fkhkhfa skhkfsk skhkfs sjfjsf sfjbfs ",
     daysAgo: 2,
   },
@@ -17,7 +17,7 @@ const exampleFeedbackItem = [
     id: 79895656877,
     upvoteCount: 589,
     badgeLetter: "J",
-    companyName: "SKHFS",
+    company: "SKHFS",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing ejgd khdjah fkhkhfa skhkfsk skhkfs sjfjsf sfjbfs ",
     daysAgo: 7,
   },
@@ -32,8 +32,41 @@ function App() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
 
-  const handleAddToList = (text: string) => {
+  //2ND METHODE
+  //const companyList = feedbackItem
+  //  .map((item) => item.company)
+  //  .filter((company, index, array) => {
+  //    return array.indexOf(company) === index;
+  //  });
+  const companyList = [
+    ...new Set(
+      useMemo(() => feedbackItem.map((item) => item.company), [feedbackItem])
+    ),
+  ]; // The Set object automatically removes duplicate values. By wrapping the mapped array with new Set(), we create a set of unique company names. The spread operator (...) then converts the set back into an array.
+  console.log(companyList);
+
+  const companyListWithAll = ["All", ...companyList];
+  console.log(companyListWithAll);
+
+  const filteredFeedbackItemsByCompany = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItem.filter(
+            (feedbackItem) => feedbackItem.company === selectedCompany
+          )
+        : feedbackItem,
+    [feedbackItem, selectedCompany]
+  );
+
+  const feedbackItemsByCompany = (company: string) => {
+    company === "All"
+      ? setSelectedCompany("") // Set selectedCompany to empty string for "All"
+      : setSelectedCompany(company); // Set selectedCompany to the company name
+  };
+
+  const handleAddToList = async (text: string) => {
     const companyName = text
       .split(" ")
       .find((word) => word.includes("#"))! //here we told typescript that we accept the risk of the word that include the hashtage might bot be a string
@@ -44,11 +77,22 @@ function App() {
       text: text,
       upvoteCount: 0,
       daysAgo: 0,
-      companyName: companyName,
+      company: companyName,
       badgeLetter: companyName.substring(0, 1).toUpperCase(),
     };
 
     setFeedbackItem([...feedbackItem, newItem]);
+    await fetch(
+      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -81,10 +125,13 @@ function App() {
       <Container
         errMsg={errMsg}
         isLoading={isLoading}
-        feedbackItem={feedbackItem}
+        feedbackItem={filteredFeedbackItemsByCompany}
         handleAddToList={handleAddToList}
       />
-      <HashtagList />
+      <HashtagList
+        companyList={companyListWithAll}
+        feedbackItemsByCompany={feedbackItemsByCompany}
+      />
     </div>
   );
 }
