@@ -3,6 +3,7 @@ import Container from "./layout/Container";
 import Footer from "./layout/Footer";
 import HashtagList from "./hashtags/HashtagList";
 import { TFeedbackItem } from "../lib/type/type";
+import Hashtagitem from "./hashtags/Hashtagitem";
 
 const exampleFeedbackItem = [
   {
@@ -69,8 +70,8 @@ function App() {
   const handleAddToList = async (text: string) => {
     const companyName = text
       .split(" ")
-      .find((word) => word.includes("#"))! //here we told typescript that we accept the risk of the word that include the hashtage might bot be a string
-      .substring(1); //so the .substring(1) wont work if its not string
+      .find((word) => word.includes("#"))! //(#COMPANY)    here we told typescript that we accept the risk of the word that include the hashtage might bot be a string
+      .slice(1); //(COMPANY)    so the .substring(1) wont work if its not string
 
     const newItem: TFeedbackItem = {
       id: new Date().getTime(),
@@ -78,7 +79,7 @@ function App() {
       upvoteCount: 0,
       daysAgo: 0,
       company: companyName,
-      badgeLetter: companyName.substring(0, 1).toUpperCase(),
+      badgeLetter: companyName.slice(0, 1).toUpperCase(), //(C)
     };
 
     setFeedbackItem([...feedbackItem, newItem]);
@@ -119,6 +120,7 @@ function App() {
 
     fetchFeedbackItems();
   }, []);
+
   return (
     <div className="app">
       <Footer />
@@ -128,10 +130,16 @@ function App() {
         feedbackItem={filteredFeedbackItemsByCompany}
         handleAddToList={handleAddToList}
       />
-      <HashtagList
-        companyList={companyListWithAll}
-        feedbackItemsByCompany={feedbackItemsByCompany}
-      />
+      <HashtagList>
+        {companyListWithAll.map((company: string) => {
+          return (
+            <Hashtagitem
+              feedbackItemsByCompany={feedbackItemsByCompany}
+              company={company}
+            />
+          );
+        })}
+      </HashtagList>
     </div>
   );
 }

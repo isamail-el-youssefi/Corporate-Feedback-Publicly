@@ -1,24 +1,7 @@
-import Hashtagitem from "./Hashtagitem";
-
 type HashtagListProps = {
-  companyList: string[];
-  feedbackItemsByCompany: (company: string) => void;
+  children: React.ReactNode;
 };
 
-export default function HashtagList({
-  companyList,
-  feedbackItemsByCompany,
-}: HashtagListProps) {
-  return (
-    <ul className="hashtags">
-      {companyList.map((company: string) => {
-        return (
-          <Hashtagitem
-            feedbackItemsByCompany={feedbackItemsByCompany}
-            company={company}
-          />
-        );
-      })}
-    </ul>
-  );
+export default function HashtagList({ children }: HashtagListProps) {
+  return <ul className="hashtags">{children}</ul>;
 }
