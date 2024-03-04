@@ -1,15 +1,15 @@
 type HashtagitemProps = {
   company: string;
-  feedbackItemsByCompany: (company: string) => void;
+  handleSelectCompany: (company: string) => void;
 };
 
 export default function Hashtagitem({
   company,
-  feedbackItemsByCompany,
+  handleSelectCompany,
 }: HashtagitemProps) {
   return (
     <li key={company}>
-      <button onClick={() => feedbackItemsByCompany(company)}>
+      <button onClick={() => handleSelectCompany(company)}>
         #{company}
       </button>
     </li>
