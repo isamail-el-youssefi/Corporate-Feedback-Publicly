@@ -1,6 +1,5 @@
+type FeedbackFormProps = { message: string };
 
-export default function ErrMessage({message}) {
-  return (
-    <div>{message}</div>
-  )
+export default function ErrMessage({ message }: FeedbackFormProps) {
+  return <div>{message}</div>;
 }
